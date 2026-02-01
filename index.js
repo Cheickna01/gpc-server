@@ -15,7 +15,7 @@ const { Server } = require("socket.io");
 app.use(
   cors({
     origin: [
-      "https://gpc-production-2842.up.railway.app",
+      "https://gpc-ch.netlify.app",
       "http://localhost:5173",
     ],
     credentials: true,
@@ -30,7 +30,7 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: [
-      "https://gpc-ch.netlify.app/",
+      "https://gpc-ch.netlify.app",
       "http://localhost:5173",
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
