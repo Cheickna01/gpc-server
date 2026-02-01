@@ -361,7 +361,7 @@ router.post("/reset-password", async (req, res) => {
         }
       };
 
-      const link = `https://gpc-ch.netlify.app//resetpassword/${authToken}`;
+      const link = `https://gpc-ch.netlify.app/resetpassword/${authToken}`;
       sendEmail(findUser.email, findUser.nom, link);
       return res.status(200).send({ email: email });
     } else {
