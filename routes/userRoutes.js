@@ -312,35 +312,56 @@ router.post("/reset-password", async (req, res) => {
       findUser.save();
 
       const transporter = nodemailer.createTransport({
-        service: "gmail",
+        host: process.env.SMTP_HOST,
+        port: process.env.SMTP_PORT,
+        secure: false, // Doit rester false pour le port 587
         auth: {
-          user: process.env.USER,
-          pass: process.env.PASSWORD,
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASS,
         },
       });
 
-      const sendEmail = async (email, name, resetLink) => {
-        const mailOptions = {
-          from: `"Support" ${process.env.USER}`,
-          to: email,
-          subject: "Réinitialisation de votre mot de passe",
-          html: `
-            <p>Bonjour ${name},</p>
+    
+
+
+
+       const sendEmail = async (email, name, resetLink) => {
+        try {
+          const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+            method: "POST",
+            headers: {
+              accept: "application/json",
+              "api-key": process.env.BREVO_API_KEY,
+              "content-type": "application/json",
+            },
+            body: JSON.stringify({
+              sender: {
+                name: "Support NOTEAPP",
+                email: process.env.SMTP_FROM, // Votre email validé sur Brevo
+              },
+              to: [{ email: email }],
+              subject: "Lien de récupération de compte",
+              htmlContent: `
+              <p>Bonjour ${name},</p>
             <p>Vous avez demandé la réinitialisation de votre mot de passe. Cliquez sur le lien ci-dessous :</p>
             <a href="${resetLink}">Réinitialiser mon mot de passe</a>
             <p>Si vous n'êtes pas à l'origine de cette demande, ignorez cet email.</p>
-          `,
-        };
+            `,
+            }),
+          });
 
-        try {
-          await transporter.sendMail(mailOptions);
-          console.log("Email de réinitialisation envoyé avec succès !");
+          if (response.ok) {
+            res.status(200).json("Veuillez vérifier votre boite!")
+          } else {
+            const errorData = await response.json();
+            console.error("Erreur Brevo API :", errorData);
+          }
         } catch (error) {
-          console.log("Erreur lors de l'envoi de l'email :", error);
+          console.error("Erreur réseau :", error);
         }
       };
 
-      const link = `https://gpc-production-2842.up.railway.app/resetpassword/${authToken}`;
+      const link = `https://gpc-ch.netlify.app//resetpassword/${authToken}`;
       sendEmail(findUser.email, findUser.nom, link);
       return res.status(200).send({ email: email });
     } else {
