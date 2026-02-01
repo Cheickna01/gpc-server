@@ -336,7 +336,7 @@ router.post("/reset-password", async (req, res) => {
             },
             body: JSON.stringify({
               sender: {
-                name: "Support NOTEAPP",
+                name: "Support GPC",
                 email: process.env.SMTP_FROM, // Votre email validé sur Brevo
               },
               to: [{ email: email }],
