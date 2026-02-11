@@ -70,19 +70,17 @@ router.post("/logup", upload.single("photoProfil"), async (req, res) => {
               (error, result) => {
                 if (error) return reject(error);
                 resolve(result);
-              }
+              },
             );
             stream.end(req.file.buffer);
-          }
+          },
         );
         photoProfil = {
           public_id: cloudinaryUploadResponse.public_id,
           url: cloudinaryUploadResponse.secure_url,
         };
       } catch (uploadError) {
-        return res
-          .status(500)
-          .json({ error: uploadError });
+        return res.status(500).json({ error: uploadError });
       }
     }
 
@@ -112,16 +110,8 @@ router.post(
   userInviteAuth,
   upload.single("photoProfil"),
   async (req, res) => {
-    const {
-      nom,
-      prenom,
-      username,
-      tel,
-      email,
-      password,
-      poste,
-      photoProfile,
-    } = req.body;
+    const { nom, prenom, username, tel, email, password, poste, photoProfile } =
+      req.body;
     const guestUser = req.user;
     const hashedPassword = await bcrypt
       .hash(password, 10)
@@ -151,12 +141,12 @@ router.post(
           {
             $addToSet: { menbres: new mongoose.Types.ObjectId(user.id) },
             $push: { owners: new mongoose.Types.ObjectId(user.id) },
-          }
+          },
         );
       } else {
         await project.updateOne(
           { _id: new mongoose.Types.ObjectId(guestUser.project_Id) },
-          { $addToSet: { menbres: new mongoose.Types.ObjectId(user.id) } }
+          { $addToSet: { menbres: new mongoose.Types.ObjectId(user.id) } },
         );
       }
 
@@ -165,7 +155,7 @@ router.post(
     } catch (error) {
       res.status(500).json({ error: "Une erreur est survenue" });
     }
-  }
+  },
 );
 
 router.post("/login", async (req, res) => {
@@ -187,16 +177,15 @@ router.post("/login", async (req, res) => {
             connected_at: date,
           },
           process.env.SECRET_TOKEN,
-          { expiresIn: "1d" }
+          { expiresIn: "1d" },
         );
         findUser.authTokens = [{ authToken }];
         findUser.last_connexion = date;
         findUser.save();
         res.cookie("token", authToken, {
           httpOnly: true,
-          secure: false,
-          sameSite: "Lax",
-          maxAge: 24 * 60 * 60 * 1000,
+          secure: true,
+          sameSite: "none",
         });
 
         res.status(200).json({
@@ -259,10 +248,10 @@ router.post(
                   (error, result) => {
                     if (error) return reject(error);
                     resolve(result);
-                  }
+                  },
                 );
                 stream.end(req.file.buffer);
-              }
+              },
             );
             photoProfil = {
               public_id: cloudinaryUploadResponse.public_id,
@@ -292,7 +281,7 @@ router.post(
     } else {
       res.status(500).json("Utilisateur introuvable...");
     }
-  }
+  },
 );
 
 router.post("/reset-password", async (req, res) => {
@@ -305,7 +294,7 @@ router.post("/reset-password", async (req, res) => {
         process.env.PASSWORD_SECRET_TOKEN,
         {
           expiresIn: "1h",
-        }
+        },
       );
 
       findUser.authTokens.push({ authToken });
@@ -321,11 +310,7 @@ router.post("/reset-password", async (req, res) => {
         },
       });
 
-    
-
-
-
-       const sendEmail = async (email, name, resetLink) => {
+      const sendEmail = async (email, name, resetLink) => {
         try {
           const response = await fetch("https://api.brevo.com/v3/smtp/email", {
             method: "POST",
@@ -351,7 +336,7 @@ router.post("/reset-password", async (req, res) => {
           });
 
           if (response.ok) {
-            res.status(200).json("Veuillez vérifier votre boite!")
+            res.status(200).json("Veuillez vérifier votre boite!");
           } else {
             const errorData = await response.json();
             console.error("Erreur Brevo API :", errorData);
