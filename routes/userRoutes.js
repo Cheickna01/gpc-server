@@ -22,7 +22,6 @@ const {
 } = require("../middlewares/auth.js");
 const { sendMessage } = require("../Utils/sendMessage.js");
 const cloudinary = require("../Utils/cloudinaryConfig.js");
-connection();
 
 router.get("/me", collaboratorAuth, async (req, res) => {
   const user = req.user;
@@ -215,8 +214,8 @@ router.post("/login", async (req, res) => {
 router.get("/logout", (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,
-    secure: false,
-    sameSite: "Lax",
+    secure: true,
+    sameSite: "none",
   });
   res.status(200).json({ message: "Déconnecté avec succès" });
 });

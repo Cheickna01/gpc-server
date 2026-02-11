@@ -435,6 +435,7 @@ router.post("/notifications", async (req, res) => {
       res.status(500).json({ erreur: "erreur" });
     }
   } catch (error) {
+    console.log(error)
     res.status(500).json(error);
   }
 });

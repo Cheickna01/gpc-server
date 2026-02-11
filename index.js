@@ -1,5 +1,6 @@
-const express = require("express");
+require("node:dns/promises").setServers(["1.1.1.1", "8.8.8.8"]);
 
+const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const path = require("path");
@@ -9,17 +10,17 @@ const router = require("./routes/userRoutes");
 
 const ProjectRouter = require("./routes/projectRoutes");
 const TaskRouter = require("./routes/taskRouter");
+const connection = require("./mongoDB/db");
+connection();
+
 const http = require("http");
 const { Server } = require("socket.io");
 
 app.use(
   cors({
-    origin: [
-      "https://gpc-ch.netlify.app",
-      "http://localhost:5173",
-    ],
+    origin: ["https://gpc-ch.netlify.app", "http://localhost:5173"],
     credentials: true,
-  })
+  }),
 );
 app.use(express.json());
 app.use(cookieParser());
@@ -29,10 +30,7 @@ app.use("/images", express.static(path.join(__dirname, "images")));
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: [
-      "https://gpc-ch.netlify.app",
-      "http://localhost:5173",
-    ],
+    origin: ["https://gpc-ch.netlify.app", "http://localhost:5173"],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
     credentials: true,
@@ -81,9 +79,9 @@ app.use("/api", TaskRouter);
 
 app.use(express.static(path.join(__dirname, "../client/dist")));
 
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../client/dist/index.html"));
-});
+// app.get("*", (req, res) => {
+//   res.sendFile(path.join(__dirname, "../client/dist/index.html"));
+// });
 
 const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => {
