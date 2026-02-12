@@ -25,7 +25,7 @@ const authentification = async (req, res, next) => {
 };
 
 const collaboratorAuth = async (req, res, next) => {
-  const token = req.cookies.token || req.headers.Authorization.split(" ")[1]
+  const token = req.cookies.token || req.headers.authorization.split(" ")[1]
   try {
     if (!token) {
       res.status(401).json("Veuillez vous authentifier1!!");
