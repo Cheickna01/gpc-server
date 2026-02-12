@@ -25,7 +25,7 @@ const authentification = async (req, res, next) => {
 };
 
 const collaboratorAuth = async (req, res, next) => {
-  const token = req.cookies.token;
+  const token = req.cookies.token || req.headers.Authorization.split(" ")[1]
   try {
     if (!token) {
       res.status(401).json("Veuillez vous authentifier1!!");
@@ -47,7 +47,7 @@ const collaboratorAuth = async (req, res, next) => {
 };
 
 const adminAuth = async (req, res, next) => {
-  const token = req.cookies.token;
+  const token = req.cookies.token || req.headers.Authorization.split(" ")[1]
   try {
     if (!token) {
       res.status(401).json("Veuillez vous authentifier!!");
@@ -73,7 +73,7 @@ const adminAuth = async (req, res, next) => {
 };
 
 const userInviteAuth = async (req, res, next) => {
-  const token = req.params.token;
+  const token = req.params.token || req.headers.Authorization.split(" ")[1]
   try {
     if (!token) {
       res.status(401).json("Veuillez vous authentifier1!!");
@@ -93,7 +93,7 @@ const userInviteAuth = async (req, res, next) => {
 };
 
 const isMember = async (req, res, next) => {
-  const token = req.cookies.token;
+  const token = req.cookies.token || req.headers.Authorization.split(" ")[1]
   if (token) {
     const decode = jwt.verify(token, process.env.SECRET_TOKEN);
     const user = await User.findOne({ email: decode.email });
@@ -119,7 +119,7 @@ const isMember = async (req, res, next) => {
 };
 
 const isSuperAdmin = async (req, res, next) => {
-  const token = req.cookies.token;
+  const token = req.cookies.token || req.headers.Authorization.split(" ")[1]
   try {
     const decode = jwt.verify(token, process.env.SECRET_TOKEN);
     const user = await User.findOne({ email: decode.email });
